@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+/TJE_framework_2020/*
+!/TJE_framework_2020/src/
+!/TJE_framework_2020/data/
