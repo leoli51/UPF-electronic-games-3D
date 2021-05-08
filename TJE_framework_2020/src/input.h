@@ -4,6 +4,7 @@
 #include "includes.h"
 #include "utils.h"
 #include "framework.h"
+#include <vector>
 
 //mapped as in SDL
 enum Gamepad
@@ -100,6 +101,44 @@ public:
 
 	static SDL_Joystick* openGamepad(int index);
 	static void updateGamepadState(SDL_Joystick* joystick, GamepadState& state);
+};
+
+class InputConsumer {
+public:
+    virtual void update(float dt);
+    virtual bool onKeyDown( SDL_KeyboardEvent event );
+    virtual bool onKeyUp(SDL_KeyboardEvent event);
+    virtual bool onMouseButtonDown( SDL_MouseButtonEvent event );
+    virtual bool onMouseButtonUp(SDL_MouseButtonEvent event);
+    virtual bool onMouseWheel(SDL_MouseWheelEvent event);
+    virtual bool onGamepadButtonDown(SDL_JoyButtonEvent event);
+    virtual bool onGamepadButtonUp(SDL_JoyButtonEvent event);
+    virtual bool onResize(int width, int height);
+};
+
+class InputManager : public InputConsumer {
+private:
+    std::vector<InputConsumer*> consumers;
+    
+public:
+    void appendConsumer(InputConsumer* consumer);
+    void addConsumerAt(InputConsumer* consumer, int index);
+    InputConsumer* removeConsumerAt(int index);
+    InputConsumer* removeConsumer(InputConsumer* consumer);
+    
+    std::vector<InputConsumer*>*  getConsumers();
+    int getConsumersCount();
+    
+    virtual void update(float dt);
+    virtual bool onKeyDown( SDL_KeyboardEvent event );
+    virtual bool onKeyUp(SDL_KeyboardEvent event);
+    virtual bool onMouseButtonDown( SDL_MouseButtonEvent event );
+    virtual bool onMouseButtonUp(SDL_MouseButtonEvent event);
+    virtual bool onMouseWheel(SDL_MouseWheelEvent event);
+    virtual bool onGamepadButtonDown(SDL_JoyButtonEvent event);
+    virtual bool onGamepadButtonUp(SDL_JoyButtonEvent event);
+    virtual bool onResize(int width, int height);
+    
 };
 
 

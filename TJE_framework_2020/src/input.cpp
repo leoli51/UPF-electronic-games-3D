@@ -153,3 +153,110 @@ void Input::updateGamepadState(SDL_Joystick* joystick, GamepadState& state)
 	else if (axis_direction.y > limit)
 		state.direction |= PAD_DOWN;
 }
+
+void InputManager::appendConsumer(InputConsumer *consumer){
+    consumers.push_back(consumer);
+};
+
+void InputManager::addConsumerAt(InputConsumer* consumer, int index){
+    consumers.insert(consumers.begin() + index, consumer);
+};
+
+InputConsumer* InputManager::removeConsumerAt(int index){
+    InputConsumer* tmp = consumers.at(index);
+    consumers.erase(consumers.begin() + index);
+    return tmp;
+};
+
+InputConsumer* InputManager::removeConsumer(InputConsumer* consumer){
+    int index = 0;
+    for (InputConsumer* c : consumers){
+        if (c == consumer)
+            break;
+        else
+            index++;
+    }
+    consumers.erase(consumers.begin() + index);
+    return consumer;
+};
+
+std::vector<InputConsumer*>*  InputManager::getConsumers(){
+    return &consumers;
+};
+
+int InputManager::getConsumersCount(){
+    return consumers.size();
+};
+
+void InputManager::update(float dt){
+    for (InputConsumer* c : consumers)
+        c->update(dt);
+};
+
+bool InputManager::onKeyDown( SDL_KeyboardEvent event ){
+    for (InputConsumer* c : consumers){
+        if (!c->onKeyDown(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onKeyUp(SDL_KeyboardEvent event){
+    for (InputConsumer* c : consumers){
+        if (!c->onKeyUp(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onMouseButtonDown( SDL_MouseButtonEvent event ){
+    for (InputConsumer* c : consumers){
+        if (!c->onMouseButtonDown(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onMouseButtonUp(SDL_MouseButtonEvent event){
+    for (InputConsumer* c : consumers){
+        if (!c->onMouseButtonUp(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onMouseWheel(SDL_MouseWheelEvent event){
+    for (InputConsumer* c : consumers){
+        if (!c->onMouseWheel(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onGamepadButtonDown(SDL_JoyButtonEvent event){
+    for (InputConsumer* c : consumers){
+        if (!c->onGamepadButtonDown(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onGamepadButtonUp(SDL_JoyButtonEvent event){
+    for (InputConsumer* c : consumers){
+        if (!c->onGamepadButtonUp(event))
+            break;
+    }
+    return true;
+};
+
+bool InputManager::onResize(int width, int height){
+    for (InputConsumer* c : consumers){
+        if (!c->onResize(width, height))
+            break;
+    }
+    return true;
+};
+
+
+
+
