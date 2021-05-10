@@ -103,7 +103,7 @@ public:
 	static void updateGamepadState(SDL_Joystick* joystick, GamepadState& state);
 };
 
-class InputConsumer {
+/*class InputConsumer {
 public:
     virtual void update(float dt);
     virtual bool onKeyDown( SDL_KeyboardEvent event );
@@ -141,6 +141,6 @@ public:
     
 };
 
-
+*/
 
 #endif

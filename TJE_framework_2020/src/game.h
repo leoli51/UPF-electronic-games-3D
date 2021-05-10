@@ -8,6 +8,8 @@
 #include "includes.h"
 #include "camera.h"
 #include "utils.h"
+#include "stage.h"
+#include <map>
 
 class Game
 {
@@ -29,12 +31,19 @@ public:
 	//some vars
 	Camera* camera; //our global camera
 	bool mouse_locked; //tells if the mouse is locked (not seen)
+    
+    std::map<std::string, Stage*> loaded_stages;
+    Stage* current_stage;
 
 	Game( int window_width, int window_height, SDL_Window* window );
 
 	//main functions
 	void render( void );
 	void update( double dt );
+    
+    // stage handling
+    void registerStage(std::string, Stage* stage);
+    void setStage(std::string);
 
 	//events
 	void onKeyDown( SDL_KeyboardEvent event );

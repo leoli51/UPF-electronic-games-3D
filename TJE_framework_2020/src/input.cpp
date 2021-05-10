@@ -154,6 +154,7 @@ void Input::updateGamepadState(SDL_Joystick* joystick, GamepadState& state)
 		state.direction |= PAD_DOWN;
 }
 
+/*
 void InputManager::appendConsumer(InputConsumer *consumer){
     consumers.push_back(consumer);
 };
@@ -257,6 +258,6 @@ bool InputManager::onResize(int width, int height){
     return true;
 };
 
-
+*/
 
 

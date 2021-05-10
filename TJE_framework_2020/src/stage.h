@@ -9,24 +9,14 @@
 #ifndef stage_h
 #define stage_h
 
-#include "camera.h"
-#include <map>
 
 class Stage {
 public:
-    virtual void init();
-    virtual void update(float dt);
-    virtual void render();
-    virtual void deinit();
+    virtual void init(){};
+    virtual void update(float dt){};
+    virtual void render(){};
+    virtual void deinit(){};
 };
 
-class StageManager {
-private:
-    std::map<std::string, Stage*> loaded_stages;
-
-public:
-    //TODO continue implementation...
-    
-}
 
 #endif /* stage_h */
