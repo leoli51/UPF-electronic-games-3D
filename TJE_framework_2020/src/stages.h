@@ -14,12 +14,15 @@
 #include "camera.h"
 #include "input.h"
 #include "framework.h"
+#include "citymap.hpp"
 
 class TestStage : public Stage {
 public:
     bool mouse_locked = false;
     float speed = 10;
     Camera* camera;
+    CityMap* city_map;
+    
     
     void init(){
         //OpenGL flags
@@ -34,6 +37,10 @@ public:
         
         //hide the cursor
         SDL_ShowCursor(!mouse_locked); //hide or show the mouse
+        
+        city_map = new CityMap();
+        city_map->loadTileSetData("data/tilesets/city/city_tileset.xml", "data/tilesets/city/models/");
+        
     };
     void update(float dt){
         //example

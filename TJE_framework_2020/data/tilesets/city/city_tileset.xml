@@ -1,0 +1,13 @@
+<tileset name="roads">
+    <connections size="4">
+        <connection name="empty" id="0" flag="1"/>
+        <connection name="low"   id="1" flag="2"/>
+        <connection name="high"  id="2" flag="4"/>
+        <connection name="highlow"id="3" flag="8"/>
+    </connections>
+    <tiles size="3">
+        <tile name="road_bend" model="road_bend.obj" up="empty" right="empty" down="low" left="low"/>
+        <tile name="road_straight" model="road_straight.obj" up="empty" right="low" down="empty" left="low"/>
+        <tile name="empty" model="NONE" up="empty" right="empty" down="empty" left="empty"/>
+    </tiles>
+</tileset>
