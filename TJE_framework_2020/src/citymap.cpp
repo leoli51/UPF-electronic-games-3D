@@ -81,15 +81,10 @@ void CityMap::setSize(int size){
     grid = new Tile**[size];
     for (int i = 0; i < size; i++)
         grid[i] = new Tile*[size];
-};
-
-void CityMap::deleteGrid(){
-    for(int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++)
-            delete grid[i][j];
-        delete [] grid[i];
-    }
-    delete [] grid;
+    
+    for (int x = 0; x < size; x++)
+        for (int y = 0; y < size; y++)
+            grid[x][y] = nullptr;
 };
 
 Tile* CityMap::makeTile(std::string name){
@@ -100,13 +95,92 @@ Tile* CityMap::makeTile(std::string name){
 
 bool CityMap::generateMap(){
     // this method tries to generate a map of the given size using the WFC algorithm (tileset version)
+    // for each position see which connections are needed
+    // get set of tiles that satisfies connections
+    // choose one at random, repeat
+    
+    // borders are filled with "empty" tiles for easing control purposes
+    for (int i = 1; i < size - 1; i++){
+        grid[i][0] = makeTile("empty");
+        grid[0][i] = makeTile("empty");
+        grid[size - 1][i] = makeTile("empty");
+        grid[i][size - 1] = makeTile("empty");
+    }
+    grid[size - 1][0] = makeTile("empty");
+    grid[size - 1][size - 1] = makeTile("empty");
+    grid[0][size -1] = makeTile("empty");
+    grid[0][0] = makeTile("empty");
+    
+    for (int x = 1; x < size - 1; x++){
+        for (int y = 1; y < size - 1; y++){
+            ConnectionData* connections[4];
+            connections[0] = grid[y - 1][x]->data->connections["down"];
+            connections[1] = grid[y][x + 1]->data->connections["left"];
+            connections[2] = grid[y + 1][x]->data->connections["up"];
+            connections[3] = grid[y][x - 1]->data->connections["right"];
+            // todo add any connnection 
+        }
+    }
+
+    
+    
+    // second look for the connections
+    for (int off_x = -1; off_x <= 1; off_x++)
+        for (int off_y = -1; off_y <=1; off_y++)
+            if (off_x != 0 && off_y != 0)
+                continue;
+            else {
+                int test_x = curr_x + off_x;
+                int test_y = curr_y + off_y;
+                if (!(0 <= test_x && test_x < size)) continue;
+                if (!(0 <= test_y && test_x < size)) continue;
+                if (grid[test_y][test_x] != nullptr) continue;
+                
+                Tile* last = grid[curr_y][curr_x];
+                // 0
+                ConnectionData* curr_connection = last->data->connections[];
+            }
+    
     for (int r = 0; r < size; r++)
         for (int c = 0; c < size; c++){
-            grid[r][c] = makeTile("road_bend");
+            grid[r][c] = makeTile("road_straight");
+            
         }
     
     return true;
 };
+
+void CityMap::render(Shader* shader_program){
+    Matrix44 m;
+    m.setTranslation(0,0,0);
+    
+    //do the draw call
+    for (int x = 0; x < size; x++){
+        for (int y = 0; y < size; y++){
+            m.setTranslation(x,0,y);
+            shader_program->setUniform("u_model", m);
+            Tile* tile = getTileAt(x, y);
+            if (tile->data->model != "NONE")
+                tile->data->mesh->render(GL_TRIANGLES);
+        }
+    }
+};
+
+Tile* CityMap::getTileAt(int x, int y){
+    return grid[y][x];
+};
+
+// destruction and private methods
+
+void CityMap::deleteGrid(){
+    for(int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++)
+            delete grid[i][j];
+        delete [] grid[i];
+    }
+    delete [] grid;
+};
+
 
 void CityMap::deleteTileSet(){
     std::map<std::string, TileData*>::iterator it;

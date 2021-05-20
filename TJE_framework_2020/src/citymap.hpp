@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include "mesh.h"
+#include "shader.h"
 
 class Tile;
 class TileData;
@@ -36,6 +37,8 @@ public:
     Tile* getTileAt(int x, int y);
     
     bool generateMap();
+    
+    void render(Shader* shader_program);
     
     ~CityMap();
     
@@ -64,6 +67,7 @@ public:
 class Tile { // class used to store information about each tile
 public:
     TileData* data; // use only one tiledata instance for all the tiles!
+    int rotation;
 };
 
 #endif /* citymap_hpp */

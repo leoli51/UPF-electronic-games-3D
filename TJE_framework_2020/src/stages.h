@@ -15,14 +15,16 @@
 #include "input.h"
 #include "framework.h"
 #include "citymap.hpp"
+#include "shader.h"
 
 class TestStage : public Stage {
 public:
     bool mouse_locked = false;
-    float speed = 10;
+    float speed = .75f;
     Camera* camera;
     CityMap* city_map;
     
+    Shader* shader;
     
     void init(){
         //OpenGL flags
@@ -40,8 +42,12 @@ public:
         
         city_map = new CityMap();
         city_map->loadTileSetData("data/tilesets/city/city_tileset.xml", "data/tilesets/city/models/");
+        city_map->setSize(40);
+        city_map->generateMap();
+        shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
         
     };
+    
     void update(float dt){
         //example
         
@@ -53,7 +59,6 @@ public:
         }
         
         //async input to move the camera around
-        if(Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
         if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
         if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
         if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
@@ -74,15 +79,25 @@ public:
         
         //set the camera as default
         camera->enable();
-         
-         //set flags
-         glDisable(GL_BLEND);
-         glEnable(GL_DEPTH_TEST);
-         glDisable(GL_CULL_FACE);
-         
-         //Draw the floor grid
-         drawGrid();
-         
+        
+        
+        //set flags
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        
+        //Draw the floor grid
+        drawGrid();
+        
+        shader->enable();
+        shader->setUniform("u_color", Vector4(1,1,1,1));
+        shader->setUniform("u_viewprojection", camera->viewprojection_matrix );
+        //shader->setUniform("u_texture", texture, 0);
+        //shader->setUniform("u_model", m);
+        //shader->setUniform("u_time", time);
+        city_map->render(shader);
+        shader->disable();
+        
          //render the FPS, Draw Calls, etc
          drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
