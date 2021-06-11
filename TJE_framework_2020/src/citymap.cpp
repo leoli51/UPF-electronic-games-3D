@@ -53,15 +53,38 @@ void CityMap::loadTileSetData(std::string xml_file, std::string models_dir){
         if (tmp->model == "NONE") tmp->mesh = NULL;
         else tmp->mesh = Mesh::Get((models_dir + tmp->model).c_str());
         
-        for (std::string conn : {"up", "right", "down", "left"})
-            tmp->connections[conn] = connectionset[tile->Attribute(conn.c_str())];
+        int conn_index = 0;
+        for (std::string conn_name : {"up", "right", "down", "left"}){
+            tmp->connections[conn_index] = connectionset[tile->Attribute(conn_name.c_str())];
+            conn_index++;
+        }
+    
         
         tileset[tmp->name] = tmp;
         
         // get next connection
         tile = tile->NextSiblingElement();
     }
-
+    
+    // add the ANY conncection
+    ConnectionData* ANY = new ConnectionData();
+    ANY->name = "ANY";
+    ANY->id = -1;
+    ANY->mask = 0xFF;
+    connectionset[ANY->name] = ANY;
+    
+    // add the NONE tile
+    TileData* NONE = new TileData();
+    NONE->name = "NONE";
+    NONE->model = "NONE";
+    NONE->mesh = NULL;
+    for (int conn_index = 0; conn_index < 4; conn_index++)
+        NONE->connections[conn_index] = connectionset["ANY"];
+    tileset[NONE->name] = NONE;
+    
+    delete NONE_TILE;
+    NONE_TILE = makeTile("NONE");
+    
     // print for testing purposes:
     std::cout<<"loaded tiles: "<<std::endl;
     std::map<std::string, TileData*>::iterator it;
@@ -87,9 +110,10 @@ void CityMap::setSize(int size){
             grid[x][y] = nullptr;
 };
 
-Tile* CityMap::makeTile(std::string name){
+Tile* CityMap::makeTile(std::string name, int rotation){
     Tile* tile = new Tile();
     tile->data = tileset[name];
+    tile->rotation = rotation;
     return tile;
 };
 
@@ -97,69 +121,83 @@ bool CityMap::generateMap(){
     // this method tries to generate a map of the given size using the WFC algorithm (tileset version)
     // for each position see which connections are needed
     // get set of tiles that satisfies connections
-    // choose one at random, repeat
+    // choose one at random
+    // repeat
     
-    // borders are filled with "empty" tiles for easing control purposes
-    for (int i = 1; i < size - 1; i++){
-        grid[i][0] = makeTile("empty");
-        grid[0][i] = makeTile("empty");
-        grid[size - 1][i] = makeTile("empty");
-        grid[i][size - 1] = makeTile("empty");
+    // inside of map is filled with "ANY" tiles
+    
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            grid[i][j] = NONE_TILE;
+        }
     }
-    grid[size - 1][0] = makeTile("empty");
-    grid[size - 1][size - 1] = makeTile("empty");
-    grid[0][size -1] = makeTile("empty");
-    grid[0][0] = makeTile("empty");
     
+    // iterate through tiles and generate map
     for (int x = 1; x < size - 1; x++){
         for (int y = 1; y < size - 1; y++){
             ConnectionData* connections[4];
-            connections[0] = grid[y - 1][x]->data->connections["down"];
-            connections[1] = grid[y][x + 1]->data->connections["left"];
-            connections[2] = grid[y + 1][x]->data->connections["up"];
-            connections[3] = grid[y][x - 1]->data->connections["right"];
-            // todo add any connnection 
+            
+            connections[0] = grid[y - 1][x]->getRotatedConnection(2);
+            connections[1] = grid[y][x + 1]->data->connections[3];
+            connections[2] = grid[y + 1][x]->data->connections[0];
+            connections[3] = grid[y][x - 1]->data->connections[1];
+            // todo add "ANY" connnection
+            
+            // look for compatible tiles
+            std::vector<Tile*>* compatible_tiles = getCompatibleTiles(connections);
+            std::cout<<"there are "<<compatible_tiles->size()<<" compatible tiles for pos "<<x<<" "<<y<<std::endl;
+            Tile* chosen = compatible_tiles->empty() ? makeTile("NONE") : compatible_tiles->at(std::rand() % compatible_tiles->size());
+            
+            //  TODO: free unused tiles! and tile vector
+            std::cout<<chosen->data->name<<" was chosen. with rotation: "<<chosen->rotation<<std::endl;
+            grid[y][x] = chosen;
         }
     }
-
-    
-    
-    // second look for the connections
-    for (int off_x = -1; off_x <= 1; off_x++)
-        for (int off_y = -1; off_y <=1; off_y++)
-            if (off_x != 0 && off_y != 0)
-                continue;
-            else {
-                int test_x = curr_x + off_x;
-                int test_y = curr_y + off_y;
-                if (!(0 <= test_x && test_x < size)) continue;
-                if (!(0 <= test_y && test_x < size)) continue;
-                if (grid[test_y][test_x] != nullptr) continue;
-                
-                Tile* last = grid[curr_y][curr_x];
-                // 0
-                ConnectionData* curr_connection = last->data->connections[];
-            }
-    
-    for (int r = 0; r < size; r++)
-        for (int c = 0; c < size; c++){
-            grid[r][c] = makeTile("road_straight");
-            
-        }
     
     return true;
 };
 
+// optimize to return pointer or something like this
+std::vector<Tile*>* CityMap::getCompatibleTiles(ConnectionData* connections[4]){
+    std::vector<Tile*>* tiles = new std::vector<Tile*>();
+    
+    for (auto const& it : tileset){
+        if (it.first == "NONE") continue;
+        for (int rotation_offset = 0; rotation_offset < 4; rotation_offset++){
+            bool fits = true;
+            for (int connection_index = 0; connection_index < 4; connection_index++){
+                if (it.second->connections[(rotation_offset + connection_index) % 4]->id != connections[connection_index]->id && connections[connection_index]->id != -1){
+                    fits = false; // tile doesnt fit with this rotation lets try next rotation
+                    break;
+                }
+            }
+                if (fits){ // if the tile fits with this rotation add it to the possible tiles
+                    tiles->push_back(makeTile(it.first, rotation_offset));
+                    std::cout<<it.first<<" fits with rotation: "<<rotation_offset<<std::endl;
+                }
+            }
+        }
+    
+    return tiles;
+};
+
+
 void CityMap::render(Shader* shader_program){
     Matrix44 m;
     m.setTranslation(0,0,0);
+    static const Vector3 rotation_axis(0,1,0);
     
     //do the draw call
     for (int x = 0; x < size; x++){
         for (int y = 0; y < size; y++){
-            m.setTranslation(x,0,y);
-            shader_program->setUniform("u_model", m);
             Tile* tile = getTileAt(x, y);
+            
+            m.setIdentity();
+            m.rotateGlobal(PI / 2 * tile->rotation, rotation_axis);
+            m.translateGlobal(x,0,y);
+            
+            shader_program->setUniform("u_model", m);
+            
             if (tile->data->model != "NONE")
                 tile->data->mesh->render(GL_TRIANGLES);
         }
@@ -198,5 +236,10 @@ CityMap::~CityMap(){
     deleteGrid();
     deleteTileSet();
 };
+
+ConnectionData* Tile::getRotatedConnection(int dir){
+    return data->connections[(dir + rotation) % 4];
+};
+
 
 

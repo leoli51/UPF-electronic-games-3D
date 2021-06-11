@@ -1,13 +1,13 @@
 //
-//  stages.h
+//  MenuStage.hpp
 //  TJE_XCODE
 //
-//  Created by Laura Mac on 10/05/21.
+//  Created by Laura Mac on 09/06/21.
 //  Copyright © 2021 Laura Mac. All rights reserved.
 //
 
-#ifndef stages_h
-#define stages_h
+#ifndef MenuStage_hpp
+#define MenuStage_hpp
 
 #include "stage.h"
 #include "game.h"
@@ -17,12 +17,11 @@
 #include "citymap.hpp"
 #include "shader.h"
 
-class TestStage : public Stage {
+class MenuStage : public Stage {
 public:
     bool mouse_locked = false;
     float speed = .75f;
     Camera* camera;
-    CityMap* city_map;
     
     Shader* shader;
     
@@ -39,11 +38,7 @@ public:
         
         //hide the cursor
         SDL_ShowCursor(!mouse_locked); //hide or show the mouse
-        
-        city_map = new CityMap();
-        city_map->loadTileSetData("data/tilesets/city/city_tileset.xml", "data/tilesets/city/models/");
-        city_map->setSize(40);
-        city_map->generateMap();
+
         shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
         
     };
@@ -98,9 +93,9 @@ public:
         city_map->render(shader);
         shader->disable();
         
-         //render the FPS, Draw Calls, etc
-         drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
-
+        //render the FPS, Draw Calls, etc
+        drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
+        
     };
     
     void deinit(){
@@ -108,7 +103,4 @@ public:
     };
 };
 
-
-
-
-#endif /* stages_h */
+#endif /* MenuStage_hpp */

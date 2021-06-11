@@ -19,6 +19,7 @@ class Tile;
 class TileData;
 class ConnectionData;
 
+
 class CityMap {
     
 public:
@@ -27,13 +28,13 @@ public:
     
     std::map<std::string, TileData*> tileset;
     std::map<std::string, ConnectionData*> connectionset;
-    
+        
     void loadTileSetData(std::string xml_file, std::string models_dir);
     
-    Tile* makeTile(std::string name);
+    Tile* makeTile(std::string name, int rotation = 0);
     
     void setSize(int size);
-    bool setTileAt(TileData* tile_type, int x, int y);
+    bool setTileAt(TileData* tile_type, int x, int y, int rotation = 0);
     Tile* getTileAt(int x, int y);
     
     bool generateMap();
@@ -43,6 +44,8 @@ public:
     ~CityMap();
     
 private:
+    Tile* NONE_TILE;
+    std::vector<Tile*>* getCompatibleTiles(ConnectionData* connections[4]);
     void deleteGrid();
     void deleteTileSet();
 };
@@ -50,7 +53,7 @@ private:
 class TileData { // class used to store information about each tile type
 public:
     int type;
-    std::map<std::string, ConnectionData*> connections;
+    ConnectionData* connections[4];
     std::string name;
     std::string model;
     Mesh* mesh;
@@ -68,6 +71,8 @@ class Tile { // class used to store information about each tile
 public:
     TileData* data; // use only one tiledata instance for all the tiles!
     int rotation;
+    
+    ConnectionData* getRotatedConnection(int dir);
 };
 
 #endif /* citymap_hpp */
