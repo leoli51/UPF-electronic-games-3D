@@ -14,12 +14,18 @@
 #include "camera.h"
 #include "input.h"
 #include "framework.h"
+#include "q3.h"
+#include "Vehicle.hpp"
+
 
 class TestStage : public Stage {
 public:
     bool mouse_locked = false;
     float speed = 10;
     Camera* camera;
+    q3Scene* scene;
+    Vehicle* car;
+    Shader* shader;
     
     void init(){
         //OpenGL flags
@@ -34,6 +40,12 @@ public:
         
         //hide the cursor
         SDL_ShowCursor(!mouse_locked); //hide or show the mouse
+        
+        // create our physics world
+        scene = new q3Scene(1.0/60.0, q3Vec3(0,0,0));
+        shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+        car = VehicleFactory::createVehicle(scene);
     };
     void update(float dt){
         //example
@@ -55,6 +67,9 @@ public:
         //to navigate with the mouse fixed in the middle
         if (mouse_locked)
             Input::centerMouse();
+        
+        // update physics
+        scene->Step();
     };
     
     void render(){
@@ -72,7 +87,23 @@ public:
          glDisable(GL_BLEND);
          glEnable(GL_DEPTH_TEST);
          glDisable(GL_CULL_FACE);
-         
+        
+        if(shader)
+        {
+            //enable shader
+            shader->enable();
+            
+            //upload uniforms
+            shader->setUniform("u_viewprojection", camera->viewprojection_matrix );
+            
+            //do the draw call
+            car->render(shader);
+            
+            //disable shader
+            shader->disable();
+        }
+
+        
          //Draw the floor grid
          drawGrid();
          
