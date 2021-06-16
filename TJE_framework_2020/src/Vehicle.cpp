@@ -58,7 +58,7 @@ void Vehicle::update(float elapsed_time){
     float angle;
     body->GetQuaternion().ToAxisAngle(&axis, &angle);
     if (q3LengthSq(axis) >= 0.0001)
-        Entity::setRotation(angle, Vector3(axis.x, axis.y, axis.z));
+        Entity::setRotation(-angle, Vector3(axis.x, axis.y, axis.z));
     
     //std::cout<<"position "<<x<<" "<<y<<" "<<z<<std::endl;
 };
