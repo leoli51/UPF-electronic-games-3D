@@ -227,6 +227,14 @@ void q3Body::ApplyTorque( const q3Vec3& torque )
 }
 
 //--------------------------------------------------------------------------------------------------
+void q3Body::ApplyAngularImpulse( const q3Vec3& impulse )
+{
+    m_angularVelocity += m_invInertiaWorld * impulse;
+    
+    SetToAwake();
+}
+
+//--------------------------------------------------------------------------------------------------
 void q3Body::SetToAwake( )
 {
 	if( !(m_flags & eAwake) )

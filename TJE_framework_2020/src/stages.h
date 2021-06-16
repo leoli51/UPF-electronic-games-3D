@@ -16,15 +16,18 @@
 #include "framework.h"
 #include "q3.h"
 #include "Vehicle.hpp"
+#include "Map.hpp"
+#include "PlayerCar.hpp"
 
 
 class TestStage : public Stage {
 public:
     bool mouse_locked = false;
-    float speed = 10;
+    float speed = 2;
     Camera* camera;
     q3Scene* scene;
-    Vehicle* car;
+    PlayerCar* car;
+    Map* map;
     Shader* shader;
     
     void init(){
@@ -42,10 +45,15 @@ public:
         SDL_ShowCursor(!mouse_locked); //hide or show the mouse
         
         // create our physics world
-        scene = new q3Scene(1.0/60.0, q3Vec3(0,0,0));
+        scene = new q3Scene(1.0/60.0, q3Vec3(0,-10,0));
         shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
-        car = VehicleFactory::createVehicle(scene);
+       // car = VehicleFactory::createVehicle(scene);
+        car = new PlayerCar(scene);
+        car->setPosition(0,10,0);
+        map = new Map(scene);
+        map->setSize(100);
+        map->setPosition(0,0,0);
     };
     void update(float dt){
         //example
@@ -58,11 +66,10 @@ public:
         }
         
         //async input to move the camera around
-        if(Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-        if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-        if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+        if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
         
         //to navigate with the mouse fixed in the middle
         if (mouse_locked)
@@ -70,6 +77,8 @@ public:
         
         // update physics
         scene->Step();
+        car->update(dt);
+        map->update(dt);
     };
     
     void render(){
@@ -98,6 +107,7 @@ public:
             
             //do the draw call
             car->render(shader);
+            map->render(shader);
             
             //disable shader
             shader->disable();

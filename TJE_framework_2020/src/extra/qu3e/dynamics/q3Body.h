@@ -72,6 +72,7 @@ public:
 	void ApplyLinearImpulse( const q3Vec3& impulse );
 	void ApplyLinearImpulseAtWorldPoint( const q3Vec3& impulse, const q3Vec3& point );
 	void ApplyTorque( const q3Vec3& torque );
+    void ApplyAngularImpulse(const q3Vec3& impulse);
 	void SetToAwake( );
 	void SetToSleep( );
 	bool IsAwake( ) const;
@@ -115,6 +116,7 @@ public:
 
 	r32 GetMass( ) const;
 	r32 GetInvMass( ) const;
+    
 private:
 	// m_flags
 	enum

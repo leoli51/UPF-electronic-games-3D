@@ -19,15 +19,26 @@ public:
     q3Body* body;
     
     Vehicle();
-    ~Vehicle();
+    virtual ~Vehicle();
     
     void setBody(q3Body* body);
     
+    // positive accelerate negative decelerate
     void accelerate(float amount);
+    // positive turn right negative turn left
     void turn(float amount);
+    //handbrake
     void handbrake();
     
+    q3Vec3 getLateralVelocity();
+    
     void update(float dt);
+    
+    void setPosition(float x, float y, float z);
+    
+protected:
+    void updateFriction(float dt);
+    
 };
 
 class VehicleFactory {
