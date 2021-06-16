@@ -15,6 +15,11 @@
 
 class Vehicle : public Entity {
 public:
+    float turn_strength = 10;
+    float acceleration_strength = 40;
+    float skidding_velocity = .5f;
+    float max_forward_speed = -40;
+    float max_backwards_speed = 5;
     
     q3Body* body;
     
@@ -31,6 +36,9 @@ public:
     void handbrake();
     
     q3Vec3 getLateralVelocity();
+    q3Vec3 getForwardVelocity();
+    
+    float getSpeed();
     
     void update(float dt);
     

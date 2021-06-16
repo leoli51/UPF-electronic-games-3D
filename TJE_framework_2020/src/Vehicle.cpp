@@ -18,11 +18,15 @@ void Vehicle::setBody(q3Body *body){
 };
 
 void Vehicle::accelerate(float amount){
-    body->ApplyLinearForce(body->GetWorldVector(q3Vec3(0,0,amount)));
+    if (getSpeed() < max_forward_speed && amount < 0)
+        return;
+    if (getSpeed() > max_backwards_speed && amount > 0)
+        return;
+    body->ApplyLinearForce(body->GetWorldVector(q3Vec3(0,0,amount * acceleration_strength)));
 };
 
 void Vehicle::turn(float amount){
-    body->ApplyTorque(q3Vec3(0,amount,0));
+    body->ApplyTorque(q3Vec3(0,amount * turn_strength,0));
 };
 
 void Vehicle::handbrake(){
@@ -35,9 +39,25 @@ q3Vec3 Vehicle::getLateralVelocity(){
     return lateral_velocity;
 };
 
+q3Vec3 Vehicle::getForwardVelocity(){
+    q3Vec3 front_normal = body->GetWorldVector(q3Vec3(0,0,1));
+    q3Vec3 front_velocity = front_normal * q3Dot(front_normal, body->GetLinearVelocity());
+    return front_velocity;
+};
+
+float Vehicle::getSpeed(){
+    return q3Dot(getForwardVelocity(), body->GetWorldVector(q3Vec3(0,0,1)));
+};
+
 void Vehicle::updateFriction(float dt){
     // kill lateral velocity
     q3Vec3 impulse = -getLateralVelocity() * body->GetMass();
+    //std::cout<<q3Length(impulse)<<std::endl;
+    if (q3Length(impulse) >= skidding_velocity){
+        std::cout<<"skidding "<<q3Length(impulse)<<std::endl;
+        impulse /= q3Length(impulse);
+        impulse *= skidding_velocity;
+    }
     body->ApplyLinearImpulse(impulse);
     
     // kill angular velocity note: should be getInertia instead of getMass
@@ -59,8 +79,6 @@ void Vehicle::update(float elapsed_time){
     body->GetQuaternion().ToAxisAngle(&axis, &angle);
     if (q3LengthSq(axis) >= 0.0001)
         Entity::setRotation(-angle, Vector3(axis.x, axis.y, axis.z));
-    
-    //std::cout<<"position "<<x<<" "<<y<<" "<<z<<std::endl;
 };
 
 void Vehicle::setPosition(float x, float y, float z){

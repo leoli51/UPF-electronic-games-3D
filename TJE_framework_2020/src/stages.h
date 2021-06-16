@@ -52,7 +52,7 @@ public:
         car = new PlayerCar(scene);
         car->setPosition(0,10,0);
         map = new Map(scene);
-        map->setSize(100);
+        map->setSize(1000);
         map->setPosition(0,0,0);
     };
     void update(float dt){

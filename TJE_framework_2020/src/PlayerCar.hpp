@@ -14,8 +14,6 @@
 
 class PlayerCar : public Vehicle {
 public:
-    float turn_strength = 10;
-    float acceleration = 40;
     
     PlayerCar(q3Scene* scene);
     
