@@ -7,6 +7,7 @@
 //
 
 #include "entity.h"
+#include "material.hpp"
 
 Entity::Entity(){
     
@@ -25,16 +26,28 @@ void Entity::update(float elapsed_time){
     
 };
 
-void Entity::render(Shader* shader){
+void Entity::render(){
     if (mesh == NULL) return;
     
-    //upload uniforms
-    shader->setUniform("u_color", Vector4(1,1,1,1));
-    //shader->setUniform("u_texture", texture, 0);
-    shader->setUniform("u_model", transform);
+    Shader::current->setUniform("u_model", transform);
     
-    //do the draw call
-    mesh->render( GL_TRIANGLES );
+    if (mesh->getNumSubmeshes() > 0){
+        for (int submesh_id = 0; submesh_id < mesh->getNumSubmeshes(); submesh_id++){
+            std::string material_name = mesh->submeshes.at(submesh_id).material;
+            Material* material = Material::Get(material_name);
+            if (material != NULL){
+                material->loadInShader();
+                //Shader::current->setUniform("u_color", material->Kd);
+            }
+            mesh->render(GL_TRIANGLES, submesh_id);
+        }
+    }
+    else {
+        //upload uniforms
+        Shader::current->setUniform("Kd", Vector4(1,1,1,1));
+        //do the draw call
+        mesh->render( GL_TRIANGLES );
+    }
 
 };
 

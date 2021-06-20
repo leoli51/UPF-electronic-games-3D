@@ -18,8 +18,8 @@ public:
     float turn_strength = 10;
     float acceleration_strength = 40;
     float skidding_velocity = .5f;
-    float max_forward_speed = -40;
-    float max_backwards_speed = 5;
+    float max_forward_speed = 40;
+    float max_backwards_speed = -5;
     
     q3Body* body;
     

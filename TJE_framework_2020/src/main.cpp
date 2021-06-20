@@ -200,10 +200,14 @@ int main(int argc, char **argv)
 	//launch the game (game is a global variable)
 	game = new Game(window_width, window_height, window);
     
+    // Mesh settings
+    Mesh::use_binary = false;
+    
     // load a stage
     TestStage* test = new TestStage();
     game->registerStage("test", test);
     game->setStage("test");
+    
 
 	//main loop, application gets inside here till user closes it
 	mainLoop();

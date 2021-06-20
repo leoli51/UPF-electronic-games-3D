@@ -176,6 +176,10 @@ Vector3 cross(const Vector3& a, const Vector3& b)
 	return Vector3(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
 }
 
+Vector3 lerp(const Vector3& a, const Vector3 &b, float v){
+    return Vector3(lerp(a.x, b.x, v),lerp(a.y, b.y, v),lerp(a.z, b.z, v));
+};
+
 
 //*********************************
 const Matrix44 Matrix44::IDENTITY;

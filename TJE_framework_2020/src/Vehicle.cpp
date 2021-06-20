@@ -18,9 +18,9 @@ void Vehicle::setBody(q3Body *body){
 };
 
 void Vehicle::accelerate(float amount){
-    if (getSpeed() < max_forward_speed && amount < 0)
+    if (getSpeed() > max_forward_speed && amount > 0)
         return;
-    if (getSpeed() > max_backwards_speed && amount > 0)
+    if (getSpeed() < max_backwards_speed && amount < 0)
         return;
     body->ApplyLinearForce(body->GetWorldVector(q3Vec3(0,0,amount * acceleration_strength)));
 };
@@ -54,7 +54,6 @@ void Vehicle::updateFriction(float dt){
     q3Vec3 impulse = -getLateralVelocity() * body->GetMass();
     //std::cout<<q3Length(impulse)<<std::endl;
     if (q3Length(impulse) >= skidding_velocity){
-        std::cout<<"skidding "<<q3Length(impulse)<<std::endl;
         impulse /= q3Length(impulse);
         impulse *= skidding_velocity;
     }
@@ -95,8 +94,8 @@ Vehicle::~Vehicle(){
 Vehicle* VehicleFactory::createVehicle(q3Scene *scene){
     Vehicle* vehicle = new Vehicle();
 
-    Mesh* mesh = new Mesh();
-    mesh->createCube();
+    Mesh* mesh = Mesh::Get("data/carkit_v1.4/Models/OBJ format/sedan.obj");
+    //mesh->createCube();
     
     q3BodyDef bodydef;
     bodydef.bodyType = eDynamicBody;

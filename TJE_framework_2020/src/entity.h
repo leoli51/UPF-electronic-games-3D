@@ -23,7 +23,7 @@ public:
     void setMesh(std::string mesh_path);
 
     //methods overwritten by derived classes 
-    virtual void render(Shader* shader);
+    virtual void render();
     virtual void update(float elapsed_time);
 
     //some useful methods...
