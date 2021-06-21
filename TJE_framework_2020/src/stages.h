@@ -134,5 +134,36 @@ public:
     };
 };
 
+class IntroStage : public Stage {
+public:
+    void init() {
+
+    }
+    void update(float dt) {
+
+    }
+    void render() {
+
+    }
+    void deinit() {
+
+    }
+};
+
+class MainMenuStage : public Stage {
+public:
+    void init() {
+
+    }
+    void update(float dt) {
+
+    }
+    void render() {
+
+    }
+    void deinit() {
+
+    }
+};
 
 #endif /* stages_h */
