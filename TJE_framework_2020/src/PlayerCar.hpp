@@ -15,7 +15,7 @@
 class PlayerCar : public Vehicle {
 public:
     
-    PlayerCar(q3Scene* scene);
+    PlayerCar(std::string model_name, q3Scene* scene);
     
     void update(float dt);
 };

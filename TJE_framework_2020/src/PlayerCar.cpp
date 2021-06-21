@@ -10,17 +10,7 @@
 #include "input.h"
 #include "q3Factory.h"
 
-PlayerCar::PlayerCar(q3Scene* scene){
-    Mesh* mesh = Mesh::Get("data/carkit_v1.4/Models/OBJ format/sedan.obj");
-    
-    //mesh->createCube();
-
-    q3Body* body = scene->CreateBody(createBodydef(eDynamicBody));
-    body->AddBox(createBoxdef(1,1,1));
-    
-    setMesh(mesh);
-    setBody(body);
-};
+PlayerCar::PlayerCar(std::string model_name, q3Scene *scene): Vehicle(model_name, scene) {};
 
 void PlayerCar::update(float dt){
     Vehicle::update(dt);

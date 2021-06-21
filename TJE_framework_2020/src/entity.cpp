@@ -37,7 +37,6 @@ void Entity::render(){
             Material* material = Material::Get(material_name);
             if (material != NULL){
                 material->loadInShader();
-                //Shader::current->setUniform("u_color", material->Kd);
             }
             mesh->render(GL_TRIANGLES, submesh_id);
         }

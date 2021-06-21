@@ -19,7 +19,7 @@ public:
     
     float distance_to_target = 10;
     float pitch = PI/6;
-    float lerp_speed = 4;
+    float lerp_speed = .1;
     
     void setLerpSpeed(float ls);
     void setDistanceToTarget(float zoom);

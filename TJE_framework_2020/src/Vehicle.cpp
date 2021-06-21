@@ -9,13 +9,31 @@
 #include "Vehicle.hpp"
 
 
-Vehicle::Vehicle(){
+Vehicle::Vehicle(std::string model_name, q3Scene *scene){
+    Mesh *car_mesh = Mesh::Get(model_name.c_str());
+    setMesh(car_mesh);
     
+    q3BodyDef bodydef;
+    bodydef.bodyType = eDynamicBody;
+    q3Body* car_body = scene->CreateBody(bodydef);
+    
+    q3BoxDef boxDef;
+    q3Transform localSpace; // Contains position and orientation, see q3Transform.h for details
+    q3Identity(localSpace); // Specify the origin, and identity orientation
+    
+    // Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
+    // and add it to a rigid body. The transform is defined relative to the owning body
+    
+    Vector3 size = car_mesh->box.halfsize * 2;
+    boxDef.Set( localSpace, q3Vec3(size.x, size.y, size.z));
+    car_body->AddBox( boxDef );
+    
+    body = car_body;
 };
 
-void Vehicle::setBody(q3Body *body){
-    this->body = body;
-};
+//void Vehicle::setBody(q3Body *body){
+//    this->body = body;
+//};
 
 void Vehicle::accelerate(float amount){
     if (getSpeed() > max_forward_speed && amount > 0)
@@ -87,32 +105,5 @@ void Vehicle::setPosition(float x, float y, float z){
 
 Vehicle::~Vehicle(){
     
-};
-
-// vehicle factory functions
-
-Vehicle* VehicleFactory::createVehicle(q3Scene *scene){
-    Vehicle* vehicle = new Vehicle();
-
-    Mesh* mesh = Mesh::Get("data/carkit_v1.4/Models/OBJ format/sedan.obj");
-    //mesh->createCube();
-    
-    q3BodyDef bodydef;
-    bodydef.bodyType = eDynamicBody;
-    q3Body* body = scene->CreateBody(bodydef);
-    
-    q3BoxDef boxDef;
-    q3Transform localSpace; // Contains position and orientation, see q3Transform.h for details
-    q3Identity(localSpace); // Specify the origin, and identity orientation
-    
-    // Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
-    // and add it to a rigid body. The transform is defined relative to the owning body
-    boxDef.Set( localSpace, q3Vec3( 1.0, 1.0, 1.0 ));
-    body->AddBox( boxDef );
-    
-    vehicle->setMesh(mesh);
-    vehicle->setBody(body);
-    
-    return vehicle;
 };
 

@@ -11,15 +11,40 @@
 
 #include "entity.h"
 #include "q3.h"
+#include "PlayerCar.hpp"
+
+class MapElement : public Entity {
+public:
+    q3Body *body;
+    
+    MapElement(std::string model_name, q3Scene *scene);
+    
+    void setPosition(float x, float y, float z);
+};
 
 class Map : public Entity {
 public:
-    q3Body* body;
+    q3Scene *scene;
+    q3Body *body;
     
-    Map(q3Scene* scene);
+    std::vector<std::string> elements_models;
+    std::vector<MapElement> elements;
+    int num_elements;
+    float max_dst_from_player;
+    
+    PlayerCar *player;
+    
+    Map(float size, int map_elements, q3Scene* scene, PlayerCar *player_car);
+    
+    
+    void addElementModel(std::string path);
+    void populate();
     
     void setPosition(float x, float y, float z);
-    void setSize(float size);
+    
+    void update(float dt);
+    void render();
+    
 };
 
 

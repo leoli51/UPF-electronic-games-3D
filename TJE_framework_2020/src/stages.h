@@ -49,12 +49,12 @@ public:
         scene = new q3Scene(1.0/60.0, q3Vec3(0,-10,0));
         shader = Shader::Get("data/shaders/basic.vs", "data/shaders/basic.fs");
 
-       // car = VehicleFactory::createVehicle(scene);
-        car = new PlayerCar(scene);
+        car = new PlayerCar("data/carkit_v1.4/Models/OBJ format/sedan.obj",scene);
         car->setPosition(0,10,0);
-        map = new Map(scene);
-        map->setSize(1000);
+        map = new Map(1000, 200, scene, car);
         map->setPosition(0,0,0);
+        map->addElementModel("data/kenney_natureKit_2.1/Models/OBJ format/cactus_tall.obj");
+        map->populate();
         
         camera->setTarget(&(car->transform));
         camera->setPitch(PI / 6);
@@ -76,6 +76,7 @@ public:
         if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
         if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
         
+      
         //to navigate with the mouse fixed in the middle
         if (mouse_locked)
             Input::centerMouse();

@@ -17,16 +17,16 @@ class Vehicle : public Entity {
 public:
     float turn_strength = 10;
     float acceleration_strength = 40;
-    float skidding_velocity = .5f;
+    float skidding_velocity = .6f;
     float max_forward_speed = 40;
     float max_backwards_speed = -5;
     
     q3Body* body;
     
-    Vehicle();
+    Vehicle(std::string model_name, q3Scene *scene);
     virtual ~Vehicle();
     
-    void setBody(q3Body* body);
+    //void setBody(q3Body* body);
     
     // positive accelerate negative decelerate
     void accelerate(float amount);
@@ -47,11 +47,6 @@ public:
 protected:
     void updateFriction(float dt);
     
-};
-
-class VehicleFactory {
-public:
-    static Vehicle* createVehicle(q3Scene* scene);
 };
 
 #endif /* Vehicle_hpp */
