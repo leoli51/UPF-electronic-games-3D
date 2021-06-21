@@ -200,7 +200,15 @@ int main(int argc, char **argv)
 	//launch the game (game is a global variable)
 	game = new Game(window_width, window_height, window);
     
-    // load a stage
+	// load a stages
+   /*IntroStage* intro = new IntroStage();
+   game->registerStage("intro", intro);
+   game->setStage("intro");
+
+   MainMenuStage* mainMenu = new MainMenuStage();
+   game->registerStage("mainMenu", mainMenu);
+   game->setStage("mainMenu");*/
+
     TestStage* test = new TestStage();
     game->registerStage("test", test);
     game->setStage("test");
