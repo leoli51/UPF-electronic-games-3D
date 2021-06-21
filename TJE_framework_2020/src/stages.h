@@ -60,6 +60,7 @@ public:
         camera->setPitch(PI / 6);
         camera->setDistanceToTarget(10);
     };
+    
     void update(float dt){
         //example
         
@@ -165,5 +166,7 @@ public:
 
     }
 };
+
+
 
 #endif /* stages_h */
