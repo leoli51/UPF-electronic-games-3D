@@ -14,7 +14,7 @@
 #include "camera.h"
 #include "input.h"
 #include "framework.h"
-#include "extra/qu3e/q3.h"
+#include "q3.h"
 #include "Vehicle.hpp"
 #include "Map.hpp"
 #include "PlayerCar.hpp"
@@ -133,36 +133,5 @@ public:
     };
 };
 
-class IntroStage : public Stage {
-public:
-    void init() {
-
-    }
-    void update(float dt) {
-
-    }
-    void render() {
-
-    }
-    void deinit() {
-
-    }
-};
-
-class MainMenuStage : public Stage {
-public:
-    void init() {
-
-    }
-    void update(float dt) {
-
-    }
-    void render() {
-
-    }
-    void deinit() {
-
-    }
-};
 
 #endif /* stages_h */

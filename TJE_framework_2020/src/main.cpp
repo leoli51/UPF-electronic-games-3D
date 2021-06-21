@@ -203,15 +203,7 @@ int main(int argc, char **argv)
     // Mesh settings
     Mesh::use_binary = false;
     
-	// load a stages
-   /*IntroStage* intro = new IntroStage();
-   game->registerStage("intro", intro);
-   game->setStage("intro");
-
-   MainMenuStage* mainMenu = new MainMenuStage();
-   game->registerStage("mainMenu", mainMenu);
-   game->setStage("mainMenu");*/
-
+    // load a stage
     TestStage* test = new TestStage();
     game->registerStage("test", test);
     game->setStage("test");
