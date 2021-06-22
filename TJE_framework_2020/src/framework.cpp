@@ -268,7 +268,7 @@ void Matrix44::scale(float x, float y, float z)
 
 void Matrix44::setScale(float x, float y, float z)
 {
-	setIdentity();
+	//setIdentity();
 	m[0] = x;
 	m[5] = y;
 	m[10] = z;

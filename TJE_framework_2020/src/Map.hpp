@@ -13,13 +13,9 @@
 #include "q3.h"
 #include "PlayerCar.hpp"
 
-class MapElement : public Entity {
-public:
-    q3Body *body;
-    
+class MapElement : public BodyEntity {
+public:    
     MapElement(std::string model_name, q3Scene *scene);
-    
-    void setPosition(float x, float y, float z);
 };
 
 class Map : public Entity {

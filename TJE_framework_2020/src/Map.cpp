@@ -10,17 +10,8 @@
 #include "q3Factory.h"
 #include "material.hpp"
 
-MapElement::MapElement(std::string model_name, q3Scene *scene){
+MapElement::MapElement(std::string model_name, q3Scene *scene) : BodyEntity(createBodydef(eStaticBody), scene){
     setMesh(model_name);
-    
-    body = createBody(scene, createBodydef(eStaticBody));
-    Vector3 size = 2 * mesh->box.halfsize;
-    body->AddBox(createBoxdef(size.x, size.y, size.z));
-};
-
-void MapElement::setPosition(float x, float y, float z){
-    Entity::setPosition(x, y, z);
-    body->SetTransform(q3Vec3(x, y, z));
 };
 
 Map::Map(float size, int map_elements, q3Scene* scene, PlayerCar *player_car){
@@ -28,13 +19,14 @@ Map::Map(float size, int map_elements, q3Scene* scene, PlayerCar *player_car){
     body->AddBox(createBoxdef(size, .1, size));
     mesh = new Mesh();
     mesh->createPlane(size / 2);
+    
     Material *mat = new Material();
     mat->Kd = Vector4(223.0/255, 145.0/255, 94.0/255, 1);
     mat->name = "desert";
     mat->registerMaterial();
     
     num_elements = map_elements;
-    max_dst_from_player = size * 0.5f;
+    max_dst_from_player = size * 0.4f;
     
     player = player_car;
     this->scene = scene;
@@ -50,13 +42,14 @@ void Map::populate(){
     for (int i = elements.size(); i < num_elements; i++){
         MapElement el(elements_models.at(rand() % elements_models.size()), scene);
         
-        float dst_from_player = q3RandomFloat(10, max_dst_from_player - 10);
+        float dst_from_player = q3RandomFloat(30, max_dst_from_player - 10);
         Vector3 pos;
         pos.random(1);
         pos.normalize();
         pos *= dst_from_player;
         
         el.setPosition(pos.x, 0, pos.z);
+        el.setScale(2);
         
         elements.push_back(el);
     }
@@ -70,19 +63,24 @@ void Map::setPosition(float x, float y, float z){
 void Map::update(float dt){
     setPosition(player->getPosition().x, 0, player->getPosition().z);
     
+    int to_reposition = 0;
     for (MapElement &el : elements){
+        el.update(dt);
         if (el.getPosition().distance(player->getPosition()) > max_dst_from_player){
+            to_reposition++;
             // reposition object in front of player
-            float reposition_dst = max_dst_from_player - 10;
-            Matrix44 rotation;
-            rotation.rotate(q3RandomFloat(-PI/4, PI/4), Vector3(0,1,0));
-            Vector3 reposition_dir = rotation.rotateVector(player->transform.frontVector());
-            Vector3 new_pos = reposition_dst * reposition_dir + player->getPosition();
-
-            el.setPosition(new_pos.x, new_pos.y, new_pos.z); // set position at edge around player somewhere
+            float reposition_dst = q3RandomFloat(max_dst_from_player / 2, max_dst_from_player - 10);
+            float reposition_angle = q3RandomFloat(0,2*PI);
+            
+            
+            Vector3 relative_pos(std::cos(reposition_angle), 0, std::sin(reposition_angle));
+            relative_pos *= reposition_dst;
+            
+            Vector3 new_pos = relative_pos + player->getPosition();
+            el.setPosition(new_pos.x, 0, new_pos.z); // set position at edge around player somewhere
         }
     }
-}
+};
 
 void Map::render(){
     // render plane

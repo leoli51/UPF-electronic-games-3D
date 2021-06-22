@@ -10,7 +10,7 @@
 #include "input.h"
 #include "q3Factory.h"
 
-PlayerCar::PlayerCar(std::string model_name, q3Scene *scene): Vehicle(model_name, scene) {};
+PlayerCar::PlayerCar(std::string model_name, q3Scene *scene): Vehicle(model_name, createBodydef(eDynamicBody), scene) {};
 
 void PlayerCar::update(float dt){
     Vehicle::update(dt);
@@ -20,4 +20,6 @@ void PlayerCar::update(float dt){
     
     if (Input::isKeyPressed(SDL_SCANCODE_A)) Vehicle::turn(1);
     if (Input::isKeyPressed(SDL_SCANCODE_D)) Vehicle::turn(-1);
+    
+    if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) Vehicle::handbrake();
 };

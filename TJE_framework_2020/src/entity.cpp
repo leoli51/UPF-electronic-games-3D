@@ -52,11 +52,13 @@ void Entity::render(){
 
 void Entity::setPosition(float x, float y, float z){
     //transform.translateGlobal(x,y,z);
-    transform.setTranslation(x, y, z);
+    Vector3 pos = getPosition();
+    transform.translateGlobal(x - pos.x, y - pos.y, z - pos.z);
 };
 
 void Entity::setRotation(float angle, Vector3 axis){
     Vector3 tmp = transform.getTranslation();
+    // save also scale
     transform.setIdentity();
     transform.rotate(angle, axis);
     transform.translateGlobal(tmp.x, tmp.y, tmp.z);

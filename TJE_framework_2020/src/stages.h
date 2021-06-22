@@ -51,7 +51,7 @@ public:
 
         car = new PlayerCar("data/carkit_v1.4/Models/OBJ format/sedan.obj",scene);
         car->setPosition(0,10,0);
-        map = new Map(1000, 200, scene, car);
+        map = new Map(1000, 250, scene, car);
         map->setPosition(0,0,0);
         map->addElementModel("data/kenney_natureKit_2.1/Models/OBJ format/cactus_tall.obj");
         map->populate();

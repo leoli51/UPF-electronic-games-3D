@@ -9,31 +9,9 @@
 #include "Vehicle.hpp"
 
 
-Vehicle::Vehicle(std::string model_name, q3Scene *scene){
-    Mesh *car_mesh = Mesh::Get(model_name.c_str());
-    setMesh(car_mesh);
-    
-    q3BodyDef bodydef;
-    bodydef.bodyType = eDynamicBody;
-    q3Body* car_body = scene->CreateBody(bodydef);
-    
-    q3BoxDef boxDef;
-    q3Transform localSpace; // Contains position and orientation, see q3Transform.h for details
-    q3Identity(localSpace); // Specify the origin, and identity orientation
-    
-    // Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
-    // and add it to a rigid body. The transform is defined relative to the owning body
-    
-    Vector3 size = car_mesh->box.halfsize * 2;
-    boxDef.Set( localSpace, q3Vec3(size.x, size.y, size.z));
-    car_body->AddBox( boxDef );
-    
-    body = car_body;
+Vehicle::Vehicle(std::string model_name, q3BodyDef def, q3Scene *scene) : BodyEntity(def, scene) {
+    BodyEntity::setMesh(model_name);
 };
-
-//void Vehicle::setBody(q3Body *body){
-//    this->body = body;
-//};
 
 void Vehicle::accelerate(float amount){
     if (getSpeed() > max_forward_speed && amount > 0)
@@ -48,7 +26,11 @@ void Vehicle::turn(float amount){
 };
 
 void Vehicle::handbrake(){
+    q3Vec3 stop_force = body->GetLinearVelocity();
+    stop_force *= -handbrake_strength;
     
+    body->ApplyLinearForce(stop_force);
+    braking = true;
 };
 
 q3Vec3 Vehicle::getLateralVelocity(){
@@ -75,6 +57,9 @@ void Vehicle::updateFriction(float dt){
         impulse /= q3Length(impulse);
         impulse *= skidding_velocity;
     }
+    if (braking)
+        impulse *= handbrake_skidding_scale;
+    braking = false;
     body->ApplyLinearImpulse(impulse);
     
     // kill angular velocity note: should be getInertia instead of getMass
@@ -82,26 +67,10 @@ void Vehicle::updateFriction(float dt){
 };
 
 void Vehicle::update(float elapsed_time){
+    BodyEntity::update(elapsed_time);
     updateFriction(elapsed_time);
-    
-    q3Transform tmp = body->GetTransform();
-    float x = tmp.position.x;
-    float y = tmp.position.y;
-    float z = tmp.position.z;
-    
-    Entity::setPosition(x, y, z);
-    
-    q3Vec3 axis;
-    float angle;
-    body->GetQuaternion().ToAxisAngle(&axis, &angle);
-    if (q3LengthSq(axis) >= 0.0001)
-        Entity::setRotation(-angle, Vector3(axis.x, axis.y, axis.z));
 };
 
-void Vehicle::setPosition(float x, float y, float z){
-    Entity::setPosition(x, y, z);
-    body->SetTransform(q3Vec3(x, y, z));
-};
 
 Vehicle::~Vehicle(){
     
