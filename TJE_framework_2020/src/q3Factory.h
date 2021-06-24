@@ -11,7 +11,7 @@
 
 #include "q3.h"
 
-q3BodyDef createBodydef(q3BodyType type, float gravityscale = 1.0, float lineardamping = 0.0, float angulardamping = 0.1);
+q3BodyDef createBodydef(q3BodyType type, void* userdata = NULL, float gravityscale = 1.0, float lineardamping = 0.0, float angulardamping = 0.1);
 q3Body* createBody(q3Scene* scene, q3BodyDef bodydef);
 q3BoxDef createBoxdef(float width, float height, float depth);
 

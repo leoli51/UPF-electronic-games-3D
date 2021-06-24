@@ -9,8 +9,9 @@
 #include "q3Factory.h"
 
 
-q3BodyDef createBodydef(q3BodyType type, float gravityscale, float lineardamping, float angulardamping){
+q3BodyDef createBodydef(q3BodyType type, void* userdata, float gravityscale, float lineardamping, float angulardamping){
     q3BodyDef bodydef;
+    bodydef.userData = userdata;
     bodydef.gravityScale = gravityscale;
     bodydef.bodyType = type;
     bodydef.linearDamping = lineardamping;

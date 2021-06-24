@@ -15,6 +15,7 @@
 
 class BodyEntity : public Entity {
 public:
+    q3Scene *scene = NULL;
     q3Body *body = NULL;
     const q3Box *box = NULL;
     

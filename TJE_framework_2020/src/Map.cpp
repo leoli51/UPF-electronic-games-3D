@@ -15,7 +15,7 @@ MapElement::MapElement(std::string model_name, q3Scene *scene) : BodyEntity(crea
 };
 
 Map::Map(float size, int map_elements, q3Scene* scene, PlayerCar *player_car){
-    body = createBody(scene, createBodydef(eStaticBody));
+    body = createBody(scene, createBodydef(eStaticBody, (void*) this));
     body->AddBox(createBoxdef(size, .1, size));
     mesh = new Mesh();
     mesh->createPlane(size / 2);

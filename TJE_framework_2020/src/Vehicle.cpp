@@ -7,13 +7,31 @@
 //
 
 #include "Vehicle.hpp"
+#include "q3Factory.h"
 
+VehicleRayCallback::VehicleRayCallback(Vehicle *vehicle){
+    this->vehicle = vehicle;
+    this->ignore = vehicle->box;
+};
 
-Vehicle::Vehicle(std::string model_name, q3BodyDef def, q3Scene *scene) : BodyEntity(def, scene) {
+bool VehicleRayCallback::ReportShape(q3Box *box){
+    if (box == ignore) return true;
+    const int eStatic = 0x020;
+    //int eDynamic = 0x040;
+    if (box->body->GetFlags() & eStatic && box->body->GetUserData() != NULL){
+        vehicle->on_ground = true;
+        return false;
+    }
+    return true;
+};
+
+Vehicle::Vehicle(std::string model_name, q3BodyDef def, q3Scene *scene) : BodyEntity(createBodydef(eDynamicBody, (void*) this), scene) {
     BodyEntity::setMesh(model_name);
 };
 
 void Vehicle::accelerate(float amount){
+    if (!on_ground) return;
+    
     if (getSpeed() > max_forward_speed && amount > 0)
         return;
     if (getSpeed() < max_backwards_speed && amount < 0)
@@ -22,10 +40,13 @@ void Vehicle::accelerate(float amount){
 };
 
 void Vehicle::turn(float amount){
-    body->ApplyTorque(q3Vec3(0,amount * turn_strength,0));
+    float scale = on_ground ? 1 : .2f;
+    body->ApplyTorque(q3Vec3(0,amount * turn_strength * scale,0));
 };
 
 void Vehicle::handbrake(){
+    if (!on_ground) return;
+    
     q3Vec3 stop_force = body->GetLinearVelocity();
     stop_force *= -handbrake_strength;
     
@@ -69,6 +90,15 @@ void Vehicle::updateFriction(float dt){
 void Vehicle::update(float elapsed_time){
     BodyEntity::update(elapsed_time);
     updateFriction(elapsed_time);
+    
+    on_ground = false;
+    
+    q3RaycastData raycast;
+    Vector3 down_dir = -1 * transform.topVector().normalize();
+    raycast.Set(body->GetTransform().position, q3Vec3(down_dir.x, down_dir.y, down_dir.z), mesh->box.halfsize.y + .1f);
+    
+    VehicleRayCallback callback(this);
+    scene->RayCast(&callback, raycast);
 };
 
 

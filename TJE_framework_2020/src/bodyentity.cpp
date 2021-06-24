@@ -10,6 +10,7 @@
 #include "q3Factory.h"
 
 BodyEntity::BodyEntity(q3BodyDef def, q3Scene *scene){
+    this->scene = scene;
     body = scene->CreateBody(def);
 };
 

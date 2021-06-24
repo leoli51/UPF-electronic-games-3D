@@ -13,16 +13,29 @@
 #include "bodyentity.hpp"
 #include "q3.h"
 
+class Vehicle;
+
+class VehicleRayCallback : public q3QueryCallback {
+public:
+    const q3Box *ignore;
+    Vehicle *vehicle;
+    
+    VehicleRayCallback(Vehicle *vehicle);
+    
+    bool ReportShape( q3Box *box);
+};
+
 class Vehicle : public BodyEntity {
 public:
     float turn_strength = 10;
-    float acceleration_strength = 40;
+    float acceleration_strength = 30;
     float skidding_velocity = 1;
     float handbrake_strength = 0.6f;
     float handbrake_skidding_scale = 0.5f;
     bool braking = false;
     float max_forward_speed = 40;
     float max_backwards_speed = -5;
+    bool on_ground = true;
     
     Vehicle(std::string model_name, q3BodyDef def, q3Scene *scene);
     virtual ~Vehicle();

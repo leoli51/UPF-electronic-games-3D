@@ -19,6 +19,8 @@
 #include "Map.hpp"
 #include "PlayerCar.hpp"
 #include "FollowCamera.hpp"
+#include "EnemyCarManager.hpp"
+#include "ContactListener.hpp"
 
 
 class TestStage : public Stage {
@@ -28,6 +30,8 @@ public:
     FollowCamera* camera;
     q3Scene* scene;
     PlayerCar* car;
+    EnemyCarManager* aiManager;
+    ContactListener* contact_listener;
     Map* map;
     Shader* shader;
     
@@ -51,10 +55,18 @@ public:
 
         car = new PlayerCar("data/carkit_v1.4/Models/OBJ format/sedan.obj",scene);
         car->setPosition(0,10,0);
-        map = new Map(1000, 250, scene, car);
+        aiManager = new EnemyCarManager(car, scene);
+        aiManager->addModel("data/carkit_v1.4/Models/OBJ format/police.obj");
+        for (int i = 0; i < 20; i++)
+            aiManager->spawnCarAroundPlayer(200);
+        
+        map = new Map(1000, 150, scene, car);
         map->setPosition(0,0,0);
         map->addElementModel("data/kenney_natureKit_2.1/Models/OBJ format/cactus_tall.obj");
         map->populate();
+        
+        contact_listener = new ContactListener();
+        //scene->SetContactListener(contact_listener);
         
         camera->setTarget(&(car->transform));
         camera->setPitch(PI / 6);
@@ -85,6 +97,7 @@ public:
         // update physics
         scene->Step();
         car->update(dt);
+        aiManager->update(dt);
         map->update(dt);
         camera->update(dt);
     };
@@ -115,6 +128,7 @@ public:
             
             //do the draw call
             car->render();
+            aiManager->render();
             map->render();
             
             //disable shader

@@ -14,7 +14,7 @@ PlayerCar::PlayerCar(std::string model_name, q3Scene *scene): Vehicle(model_name
 
 void PlayerCar::update(float dt){
     Vehicle::update(dt);
-    
+        
     if (Input::isKeyPressed(SDL_SCANCODE_W)) Vehicle::accelerate(1);
     if (Input::isKeyPressed(SDL_SCANCODE_S)) Vehicle::accelerate(-1);
     
