@@ -60,12 +60,14 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 //what to do when the image has to be draw
 void Game::render(void)
 {
+
 	//set the clear color (the background color)
 	//glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	// Clear the window and the depth buffer
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+	//---RENDER OF THE WORLD---
 
 	//set the camera as default
 	/*camera->enable();
@@ -147,8 +149,8 @@ void Game::registerStage(std::string name, Stage* stage){
 
 void Game::setStage(std::string name){
     // unload current stage
-    if (current_stage != NULL)
-        current_stage->deinit();
+    /*if (current_stage != NULL)
+        current_stage->deinit();*/
     
     // find new stage
     std::map<std::string, Stage*>::const_iterator pos = loaded_stages.find(name);
@@ -165,7 +167,8 @@ void Game::onKeyDown( SDL_KeyboardEvent event )
 	switch(event.keysym.sym)
 	{
 		case SDLK_ESCAPE: must_exit = true; break; //ESC key, kill the app
-		case SDLK_F1: Shader::ReloadAll(); break; 
+		case SDLK_F1: Shader::ReloadAll(); break;
+		case SDL_SCANCODE_A: setStage("intro"); break;
 	}
 }
 

@@ -14,6 +14,9 @@
 #include "camera.h"
 #include "input.h"
 #include "framework.h"
+#include "shader.h"
+#include "texture.h"
+
 
 class TestStage : public Stage {
 public:
@@ -95,8 +98,38 @@ public:
 
     }
     void render() {
-
+        renderGUI();
     }
+
+    void renderGUI() {
+        
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        Camera cam2D;
+        cam2D.setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
+
+        Mesh quad;
+        quad.createQuad(100, 100, 100, 100, false);
+        cam2D.enable();
+
+        Shader* shader = Shader::Get("data/shaders/basic.vs","data/shaders/texture.fs");
+        shader->enable();
+        shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+        shader->setUniform("u_viewprojection", cam2D.viewprojection_matrix);
+        shader->setUniform("u_texture", Texture::Get("data/city-car.png"), 0);
+        shader->setUniform("u_model", Matrix44());
+        shader->setUniform("u_texture_tiling", 1.0f);
+        quad.render(GL_TRIANGLES);
+        shader->disable();
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+    }
+
     void deinit() {
 
     }

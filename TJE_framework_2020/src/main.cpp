@@ -201,17 +201,17 @@ int main(int argc, char **argv)
 	game = new Game(window_width, window_height, window);
     
 	// load a stages
-   /*IntroStage* intro = new IntroStage();
+   IntroStage* intro = new IntroStage();
    game->registerStage("intro", intro);
    game->setStage("intro");
 
-   MainMenuStage* mainMenu = new MainMenuStage();
+   /*MainMenuStage* mainMenu = new MainMenuStage();
    game->registerStage("mainMenu", mainMenu);
    game->setStage("mainMenu");*/
 
     TestStage* test = new TestStage();
     game->registerStage("test", test);
-    game->setStage("test");
+    //game->setStage("test");
 
 	//main loop, application gets inside here till user closes it
 	mainLoop();
