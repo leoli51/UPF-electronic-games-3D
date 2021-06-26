@@ -25,6 +25,10 @@ public:
     
     std::vector<std::string> elements_models;
     std::vector<MapElement> elements;
+    std::vector<Entity> decorations;
+    
+    Entity walls[4];
+    
     int num_elements;
     float max_dst_from_player;
     
@@ -40,6 +44,10 @@ public:
     
     void update(float dt);
     void render();
+    
+private:
+    void generateWalls();
+    void generateDecorations();
     
 };
 

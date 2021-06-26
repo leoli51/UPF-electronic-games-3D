@@ -30,7 +30,7 @@ Vehicle::Vehicle(std::string model_name, q3BodyDef def, q3Scene *scene) : BodyEn
 };
 
 void Vehicle::accelerate(float amount){
-    if (!on_ground) return;
+    if (!on_ground || exploded) return;
     
     if (getSpeed() > max_forward_speed && amount > 0)
         return;
@@ -40,18 +40,28 @@ void Vehicle::accelerate(float amount){
 };
 
 void Vehicle::turn(float amount){
+    if (exploded) return;
+    
     float scale = on_ground ? 1 : .2f;
     body->ApplyTorque(q3Vec3(0,amount * turn_strength * scale,0));
 };
 
 void Vehicle::handbrake(){
-    if (!on_ground) return;
+    if (!on_ground || exploded) return;
     
     q3Vec3 stop_force = body->GetLinearVelocity();
     stop_force *= -handbrake_strength;
     
     body->ApplyLinearForce(stop_force);
     braking = true;
+};
+
+void Vehicle::explode(){
+    default_kd = Vector4(0,0,0,1);
+    use_default_kd = true;
+    
+    exploded = true;
+    body->ApplyLinearImpulse(q3Vec3(0,10,0));
 };
 
 q3Vec3 Vehicle::getLateralVelocity(){
@@ -89,7 +99,16 @@ void Vehicle::updateFriction(float dt){
 
 void Vehicle::update(float elapsed_time){
     BodyEntity::update(elapsed_time);
-    updateFriction(elapsed_time);
+    if (exploded)
+        time_since_explosion += elapsed_time;
+    if (on_ground)
+        updateFriction(elapsed_time);
+    
+    //Vector3 ground_normal(0,1,0);
+    //Vector3 top = transform.topVector();
+    //float dotp = dot(ground_normal, top);
+    //if (dotp <= 0.1 ) // onground
+    //    body->ApplyAngularImpulse(q3Vec3(0,0,.1));
     
     on_ground = false;
     

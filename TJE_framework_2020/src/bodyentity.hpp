@@ -18,7 +18,7 @@ public:
     q3Scene *scene = NULL;
     q3Body *body = NULL;
     const q3Box *box = NULL;
-    
+
     BodyEntity(q3BodyDef def, q3Scene *scene);
     
     void setMesh(std::string model_path);

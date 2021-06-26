@@ -38,3 +38,5 @@ q3BoxDef createBoxdef(float width, float height, float depth){
     boxdef.Set(localSpace, q3Vec3( width, height, depth ));
     return boxdef;
 };
+
+

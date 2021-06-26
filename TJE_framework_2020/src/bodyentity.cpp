@@ -29,7 +29,8 @@ void BodyEntity::setMesh(Mesh *mesh){
 void BodyEntity::generateColliderFromMesh(){
     assert(mesh != NULL && "Missing mesh");
     
-    Vector3 size = mesh->box.halfsize * 2;
+    const float collider_scale = .9f;
+    Vector3 size = getScale() * mesh->box.halfsize * 2 * collider_scale;
     box = body->AddBox(createBoxdef(size.x, size.y, size.z));
 };
 
@@ -44,7 +45,9 @@ void BodyEntity::setRotation(float angle, Vector3 axis){
 };
 
 void BodyEntity::setScale(float x, float y, float z){
-    transform.setScale(x,y,z);
+    Entity::setScale(x, y, z);
+    if (box != NULL) body->RemoveBox(box);
+    generateColliderFromMesh();
 };
 
 void BodyEntity::setScale(float scale){

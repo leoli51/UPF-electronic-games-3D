@@ -12,37 +12,33 @@
 
 void ContactListener::BeginContact(const q3ContactConstraint *contact){
     // for now only map and vehicles have userdata .. TODO implement better system
-    int eStatic = 0x020;
+    //int eStatic = 0x020;
     int eDynamic = 0x040;
-    int eKinematic = 0x080;
+    //int eKinematic = 0x080;
     
-    Vehicle *vehicle = NULL;
-    if ((contact->bodyA->GetFlags() & eDynamic) && (contact->bodyB->GetFlags() & eStatic)){
-        vehicle = (Vehicle*) contact->bodyA->GetUserData();
+    Vehicle *vehicleA = (contact->bodyA->GetFlags() & eDynamic) ? (Vehicle*) contact->bodyA->GetUserData() : NULL;
+    Vehicle *vehicleB = (contact->bodyB->GetFlags() & eDynamic) ? (Vehicle*) contact->bodyB->GetUserData() : NULL;
+    
+    q3Vec3 contact_position = contact->manifold.contacts[0].position;
+    
+    q3Vec3 impact_dir_A = (contact_position - contact->bodyA->GetTransform().position);
+    float impact_speed_A = q3Dot(contact->bodyA->GetLinearVelocity(), impact_dir_A);
+    q3Vec3 impact_dir_B = (contact_position - contact->bodyB->GetTransform().position);
+    float impact_speed_B = q3Dot(contact->bodyB->GetLinearVelocity(), impact_dir_B);
+    
+    float impact_speed = impact_speed_A + impact_speed_B;
+
+    if (vehicleA){
+        //std::cout<<"impact A: "<<impact_speed_A<<std::endl;
+        if (impact_speed > vehicleA->explosion_speed)
+            vehicleA->explode();
     }
-    
-    else if ((contact->bodyB->GetFlags() & eDynamicBody) && (contact->bodyA->GetFlags() & eStaticBody)){
-        vehicle = (Vehicle*) contact->bodyB->GetUserData();
-    }
-    
-    if (vehicle != NULL){
-        std::cout<<"Vehicle ground collision"<<std::endl;
-        vehicle->on_ground = true;
+    if (vehicleB){
+        //std::cout<<"impact B: "<<impact_speed_B<<std::endl;
+        if (impact_speed > vehicleB->explosion_speed)
+            vehicleB->explode();
     }
 };
 
 void ContactListener::EndContact(const q3ContactConstraint *contact){
-    // for now only map and vehicles have userdata .. TODO implement better system
-    Vehicle *vehicle = NULL;
-    if ((contact->bodyA->GetFlags() & eDynamicBody) && (contact->bodyB->GetFlags() & eStaticBody)){
-        vehicle = (Vehicle*) contact->bodyA->GetUserData();
-    }
-    
-    else if ((contact->bodyB->GetFlags() & eDynamicBody) && (contact->bodyA->GetFlags() & eStaticBody)){
-        vehicle = (Vehicle*) contact->bodyB->GetUserData();
-    }
-    
-    if (vehicle != NULL){
-        vehicle->on_ground = false;
-    }
 };

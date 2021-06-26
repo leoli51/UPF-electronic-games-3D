@@ -17,11 +17,12 @@ void EnemyCar::update(float dt){
     Vehicle::update(dt);
     
     Vector3 player_pos = player->getPosition();
-    Vector3 steer_dir = player_pos - getPosition();
-    q3Vec3 steer_dir_local = q3Normalize(body->GetLocalVector(q3Vec3(steer_dir.x, steer_dir.y, steer_dir.z)));
-    float steer_amount  = q3Clamp(-1,1, steer_dir_local.x);
+    Vector3 player_dir = player_pos - getPosition();
+    q3Vec3 player_dir_local = body->GetLocalVector(q3Vec3(player_dir.x, player_dir.y, player_dir.z));
+    float steer_amount  = q3Clamp(-1,1, player_dir_local.x);
     turn(steer_amount);
-    accelerate(1);
+    float accelerate_amount = q3Clamp(-1, 1, player_dir_local.z);
+    accelerate(accelerate_amount);
 };
 
 void EnemyCar::setTraits(AiTraits t){

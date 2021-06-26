@@ -36,6 +36,9 @@ public:
     float max_forward_speed = 40;
     float max_backwards_speed = -5;
     bool on_ground = true;
+    float explosion_speed = max_forward_speed * .85f;
+    bool exploded = false;
+    float time_since_explosion = 0;
     
     Vehicle(std::string model_name, q3BodyDef def, q3Scene *scene);
     virtual ~Vehicle();
@@ -48,6 +51,8 @@ public:
     void turn(float amount);
     //handbrake
     void handbrake();
+    //explode
+    void explode();
     
     q3Vec3 getLateralVelocity();
     q3Vec3 getForwardVelocity();

@@ -10,7 +10,8 @@
 #include "material.hpp"
 
 Entity::Entity(){
-    
+    default_kd.set(1,1,1,1);
+    scale.set(1, 1, 1);
 };
 
 
@@ -31,7 +32,7 @@ void Entity::render(){
     
     Shader::current->setUniform("u_model", transform);
     
-    if (mesh->getNumSubmeshes() > 0){
+    if (mesh->getNumSubmeshes() > 0 && !use_default_kd){
         for (int submesh_id = 0; submesh_id < mesh->getNumSubmeshes(); submesh_id++){
             std::string material_name = mesh->submeshes.at(submesh_id).material;
             Material* material = Material::Get(material_name);
@@ -43,7 +44,7 @@ void Entity::render(){
     }
     else {
         //upload uniforms
-        Shader::current->setUniform("Kd", Vector4(1,1,1,1));
+        Shader::current->setUniform("Kd", default_kd);
         //do the draw call
         mesh->render( GL_TRIANGLES );
     }
@@ -65,12 +66,21 @@ void Entity::setRotation(float angle, Vector3 axis){
     //transform.setRotation(angle, axis);
 };
 
+void Entity::setScale(float x, float y, float z){
+    scale.set(x, y, z);
+    transform.setScale(x, y, z);
+};
+
 Vector3 Entity::getPosition(){
     return transform.getTranslation();
 };
 
 Matrix44 Entity::getRotation(){
     return transform.getRotationOnly();
+};
+
+Vector3 Entity::getScale(){
+    return scale;
 };
 
 Entity::~Entity(){
