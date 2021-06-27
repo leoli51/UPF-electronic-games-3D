@@ -33,7 +33,7 @@ public:
 	bool mouse_locked; //tells if the mouse is locked (not seen)
     
     std::map<std::string, Stage*> loaded_stages;
-    Stage* current_stage;
+    Stage* current_stage = NULL;
 
 	Game( int window_width, int window_height, SDL_Window* window );
 

@@ -121,6 +121,7 @@ void Game::update(double seconds_elapsed)
     
     if (current_stage != NULL)
         current_stage->update(seconds_elapsed);
+
 	//example
 	//angle += (float)seconds_elapsed * 10.0f;
 
@@ -144,13 +145,13 @@ void Game::update(double seconds_elapsed)
 }
 
 void Game::registerStage(std::string name, Stage* stage){
-    loaded_stages[name] = stage;
+	loaded_stages[name] = stage;
 }
 
 void Game::setStage(std::string name){
     // unload current stage
-    /*if (current_stage != NULL)
-        current_stage->deinit();*/
+	if (current_stage != NULL)
+		current_stage->deinit();
     
     // find new stage
     std::map<std::string, Stage*>::const_iterator pos = loaded_stages.find(name);
@@ -164,11 +165,12 @@ void Game::setStage(std::string name){
 //Keyboard event handler (sync input)
 void Game::onKeyDown( SDL_KeyboardEvent event )
 {
+	if (Input::isKeyPressed(SDL_SCANCODE_H)) setStage("test");
+	
 	switch(event.keysym.sym)
 	{
 		case SDLK_ESCAPE: must_exit = true; break; //ESC key, kill the app
 		case SDLK_F1: Shader::ReloadAll(); break;
-		case SDL_SCANCODE_A: setStage("intro"); break;
 	}
 }
 
@@ -178,7 +180,6 @@ void Game::onKeyUp(SDL_KeyboardEvent event)
 
 void Game::onGamepadButtonDown(SDL_JoyButtonEvent event)
 {
-
 }
 
 void Game::onGamepadButtonUp(SDL_JoyButtonEvent event)

@@ -205,13 +205,13 @@ int main(int argc, char **argv)
    game->registerStage("intro", intro);
    game->setStage("intro");
 
-   /*MainMenuStage* mainMenu = new MainMenuStage();
+   MainMenuStage* mainMenu = new MainMenuStage();
    game->registerStage("mainMenu", mainMenu);
-   game->setStage("mainMenu");*/
+   //game->setStage("mainMenu");
 
-    TestStage* test = new TestStage();
-    game->registerStage("test", test);
-    //game->setStage("test");
+   TestStage* test = new TestStage();
+   game->registerStage("test", test);
+   //game->setStage("test");
 
 	//main loop, application gets inside here till user closes it
 	mainLoop();

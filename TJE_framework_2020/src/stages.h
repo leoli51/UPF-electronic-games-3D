@@ -91,17 +91,41 @@ public:
 
 class IntroStage : public Stage {
 public:
+    Camera* camera;
+    
     void init() {
+        
+        //OpenGL flags
+        //glEnable(GL_CULL_FACE); //render both sides of every triangle
+        //glEnable(GL_DEPTH_TEST); //check the occlusions using the Z buffer
 
+        //create our camera
+        camera = new Camera();
+        //camera->lookAt(Vector3(0.f, 100.f, 100.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)); //position the camera and point to 0,0,0
+
+        //camera->setPerspective(70.f, Game::instance->window_width / (float)Game::instance->window_height, 0.1f, 10000.f); //set the projection, we want to be perspective
     }
     void update(float dt) {
 
     }
+
     void render() {
-        renderGUI();
+        //set the clear color (the background color)
+        glClearColor(255.0, 255.0, 255.0, 1.0);
+       
+        // Clear the window and the depth buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //set the camera as default
+        //camera->enable();
+
+        renderGUI(400, 100, 250, 100, Texture::Get("data/MainMenu/sprmenu1.png"), Texture::Get("data/MainMenu/sprmenu2.png"), false);
+        renderGUI(400, 225, 250, 100, Texture::Get("data/MainMenu/sprload1.png"), Texture::Get("data/MainMenu/sprload2.png"), false);
+        renderGUI(400, 350, 250, 100, Texture::Get("data/MainMenu/sprops1.png"), Texture::Get("data/MainMenu/sprops2.png"), false);
+        renderGUI(400, 475, 250, 100, Texture::Get("data/MainMenu/sprquit1.png"), Texture::Get("data/MainMenu/sprquit2.png"), false);
     }
 
-    void renderGUI() {
+    void renderGUI(float x, float y, float w, float h, Texture* tex, Texture* altTex, bool flipuvs) {
         
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
@@ -112,15 +136,29 @@ public:
         cam2D.setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
 
         Mesh quad;
-        quad.createQuad(100, 100, 100, 100, false);
+        //quad.createQuad(x, y, w + sin(Game::instance->time*16) * 10, h + sin(Game::instance->time*16) * 10, flipuvs);
+        quad.createQuad(x, y, w, h, flipuvs);
         cam2D.enable();
+
+        Vector2 mousePosition = Input::mouse_position;
+        float halfWidth = w * 0.5;
+        float halfHeith = h * 0.5;
+        float min_x = x - halfWidth;
+        float min_y = y - halfHeith;
+        float max_x = x + halfWidth;
+        float max_y = y + halfHeith;
+
+        bool hoover = mousePosition.x > min_x && mousePosition.x < max_x&& mousePosition.y > min_y && mousePosition.y < max_y;
 
         Shader* shader = Shader::Get("data/shaders/basic.vs","data/shaders/texture.fs");
         shader->enable();
         shader->setUniform("u_color", Vector4(1, 1, 1, 1));
         shader->setUniform("u_viewprojection", cam2D.viewprojection_matrix);
-        shader->setUniform("u_texture", Texture::Get("data/city-car.png"), 0);
-        shader->setUniform("u_model", Matrix44());
+        shader->setUniform("u_texture", hoover ? altTex : tex, 0);
+
+        Matrix44 quadModel;
+        //quadModel.setTranslation(sin(Game::instance->time) * 10, 0, 0);
+        shader->setUniform("u_model", quadModel);
         shader->setUniform("u_texture_tiling", 1.0f);
         quad.render(GL_TRIANGLES);
         shader->disable();
@@ -131,7 +169,7 @@ public:
     }
 
     void deinit() {
-
+        //delete camera;
     }
 };
 
