@@ -119,13 +119,18 @@ public:
         //set the camera as default
         //camera->enable();
 
-        renderGUI(400, 100, 250, 100, Texture::Get("data/MainMenu/sprmenu1.png"), Texture::Get("data/MainMenu/sprmenu2.png"), false);
-        renderGUI(400, 225, 250, 100, Texture::Get("data/MainMenu/sprload1.png"), Texture::Get("data/MainMenu/sprload2.png"), false);
-        renderGUI(400, 350, 250, 100, Texture::Get("data/MainMenu/sprops1.png"), Texture::Get("data/MainMenu/sprops2.png"), false);
-        renderGUI(400, 475, 250, 100, Texture::Get("data/MainMenu/sprquit1.png"), Texture::Get("data/MainMenu/sprquit2.png"), false);
+        if (renderButton(400, 100, 250, 100, Texture::Get("data/MainMenu/sprmenu1.png"), Texture::Get("data/MainMenu/sprmenu2.png"), false)) {
+            Game::instance->setStage("test");
+        }
+        if (renderButton(400, 225, 250, 100, Texture::Get("data/MainMenu/sprload1.png"), Texture::Get("data/MainMenu/sprload2.png"), false)) { 
+        }
+        if (renderButton(400, 350, 250, 100, Texture::Get("data/MainMenu/sprops1.png"), Texture::Get("data/MainMenu/sprops2.png"), false)) {
+        }
+        if (renderButton(400, 475, 250, 100, Texture::Get("data/MainMenu/sprquit1.png"), Texture::Get("data/MainMenu/sprquit2.png"), false)) { 
+        }
     }
 
-    void renderGUI(float x, float y, float w, float h, Texture* tex, Texture* altTex, bool flipuvs) {
+    bool renderButton(float x, float y, float w, float h, Texture* tex, Texture* altTex, bool flipuvs) {
         
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
@@ -148,7 +153,8 @@ public:
         float max_x = x + halfWidth;
         float max_y = y + halfHeith;
 
-        bool hoover = mousePosition.x > min_x && mousePosition.x < max_x&& mousePosition.y > min_y && mousePosition.y < max_y;
+        bool hoover = mousePosition.x > min_x && mousePosition.x < max_x && mousePosition.y > min_y && mousePosition.y < max_y;
+        bool pressed = Input::isMousePressed(1);
 
         Shader* shader = Shader::Get("data/shaders/basic.vs","data/shaders/texture.fs");
         shader->enable();
@@ -166,6 +172,8 @@ public:
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glDisable(GL_BLEND);
+
+        return hoover && pressed;
     }
 
     void deinit() {
