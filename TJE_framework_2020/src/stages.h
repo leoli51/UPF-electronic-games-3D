@@ -89,7 +89,7 @@ public:
     };
 };
 
-class IntroStage : public Stage {
+class MainMenuStage : public Stage {
 public:
     Camera* camera;
     
@@ -181,7 +181,7 @@ public:
     }
 };
 
-class MainMenuStage : public Stage {
+class IntroStage : public Stage {
 public:
     void init() {
 
@@ -190,7 +190,56 @@ public:
 
     }
     void render() {
+        renderUi(0, 0, Game::instance->window_width * 2, Game::instance->window_height * 2, Texture::Get("data/Intro/introScreenBackground.png"), false);
+        renderUi(400, 250, 700, 70, Texture::Get("data/Intro/introScreenTittle.png"), false);
+        drawText(300, 350, "Press SPACE to start!", Vector3(1, 1, 1), 2);
+        if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) {
+            std::cout << "i pressed";
+            Game::instance->setStage("mainMenu");
+        }
+    }
 
+    void renderUi(float x, float y, float w, float h, Texture* tex, bool flipuvs) {
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        Camera cam2D;
+        cam2D.setOrthographic(0, Game::instance->window_width, Game::instance->window_height, 0, -1, 1);
+
+        Mesh quad;
+        //quad.createQuad(x, y, w + sin(Game::instance->time*16) * 10, h + sin(Game::instance->time*16) * 10, flipuvs);
+        quad.createQuad(x, y, w, h, false);
+        cam2D.enable();
+
+        /*Vector2 mousePosition = Input::mouse_position;
+        float halfWidth = w * 0.5;
+        float halfHeith = h * 0.5;
+        float min_x = x - halfWidth;
+        float min_y = y - halfHeith;
+        float max_x = x + halfWidth;
+        float max_y = y + halfHeith;
+
+        bool hoover = mousePosition.x > min_x && mousePosition.x < max_x&& mousePosition.y > min_y && mousePosition.y < max_y;
+        bool pressed = Input::isMousePressed(1);*/
+
+        Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+        shader->enable();
+        shader->setUniform("u_color", Vector4(1, 1, 1, 1));
+        shader->setUniform("u_viewprojection", cam2D.viewprojection_matrix);
+        shader->setUniform("u_texture", tex, 0);
+
+        Matrix44 quadModel;
+        //quadModel.setTranslation(sin(Game::instance->time) * 10, 0, 0);
+        shader->setUniform("u_model", quadModel);
+        shader->setUniform("u_texture_tiling", 1.0f);
+        quad.render(GL_TRIANGLES);
+        shader->disable();
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
     }
     void deinit() {
 
