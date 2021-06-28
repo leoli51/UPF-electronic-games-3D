@@ -21,6 +21,14 @@ FBO* fbo = NULL;
 
 Game* Game::instance = NULL;
 
+//******************************
+//El handler para un sample
+HSAMPLE hSample;
+
+//El handler para un canal
+HCHANNEL hSampleChannel;
+//******************************
+
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
 	this->window_width = window_width;
@@ -28,12 +36,29 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	this->window = window;
 	instance = this;
 	must_exit = false;
-
+	
+	//**********************************************************************************************
 	//Inicializamos BASS al arrancar el juego (id_del_device, muestras por segundo, ...)
 	if (BASS_Init(-1, 44100, 0, 0, NULL) == false) //-1 significa usar el por defecto del sistema operativo
 	{
 		//error abriendo la tarjeta de sonido...
 	}
+
+	//Cargamos un sample del disco duro (memoria, filename, offset, length, max, flags)
+	//use BASS_SAMPLE_LOOP in the last param to have a looped sound
+	hSample = BASS_SampleLoad(false, "data/Car engine start sound effect.mp3", 0, 0, 3, 0);
+	if (hSample == 0)
+	{
+		//file not found
+		std::cout << "file not found" << std::endl;
+	}
+
+	//Creamos un canal para el sample
+	hSampleChannel = BASS_SampleGetChannel(hSample, false);
+
+	//Lanzamos un sample
+	BASS_ChannelPlay(hSampleChannel, true);
+	//**********************************************************************************************
 
 
 	fps = 0;

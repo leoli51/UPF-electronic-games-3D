@@ -1,4 +1,6 @@
 #include "extra/bass.h"
+#include "framework.h"
+#include "game.h"
 
 class Audio
 {
