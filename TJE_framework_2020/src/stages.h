@@ -122,11 +122,12 @@ public:
         if (renderButton(400, 100, 250, 100, Texture::Get("data/MainMenu/sprmenu1.png"), Texture::Get("data/MainMenu/sprmenu2.png"), false)) {
             Game::instance->setStage("test");
         }
-        if (renderButton(400, 225, 250, 100, Texture::Get("data/MainMenu/sprload1.png"), Texture::Get("data/MainMenu/sprload2.png"), false)) { 
+        /*if (renderButton(400, 225, 250, 100, Texture::Get("data/MainMenu/sprload1.png"), Texture::Get("data/MainMenu/sprload2.png"), false)) { 
         }
         if (renderButton(400, 350, 250, 100, Texture::Get("data/MainMenu/sprops1.png"), Texture::Get("data/MainMenu/sprops2.png"), false)) {
-        }
-        if (renderButton(400, 475, 250, 100, Texture::Get("data/MainMenu/sprquit1.png"), Texture::Get("data/MainMenu/sprquit2.png"), false)) { 
+        }*/
+        if (renderButton(400, 225, 250, 100, Texture::Get("data/MainMenu/sprquit1.png"), Texture::Get("data/MainMenu/sprquit2.png"), false)) {
+            Game::instance->must_exit = true;
         }
     }
 
@@ -194,7 +195,6 @@ public:
         renderUi(400, 250, 700, 70, Texture::Get("data/Intro/introScreenTittle.png"), false);
         drawText(300, 350, "Press SPACE to start!", Vector3(1, 1, 1), 2);
         if (Input::isKeyPressed(SDL_SCANCODE_SPACE)) {
-            std::cout << "i pressed";
             Game::instance->setStage("mainMenu");
         }
     }
