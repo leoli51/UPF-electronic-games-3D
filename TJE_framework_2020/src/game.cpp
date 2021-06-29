@@ -6,7 +6,7 @@
 #include "shader.h"
 #include "input.h"
 #include "animation.h"
-#include "extra/bass.h"
+//#include "extra/bass.h"
 
 #include <cmath>
 
@@ -21,13 +21,13 @@ FBO* fbo = NULL;
 
 Game* Game::instance = NULL;
 
-//******************************
+/*//******************************
 //El handler para un sample
 HSAMPLE hSample;
 
 //El handler para un canal
 HCHANNEL hSampleChannel;
-//******************************
+//*******************************/
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
@@ -37,7 +37,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	instance = this;
 	must_exit = false;
 	
-	//**********************************************************************************************
+	/*//**********************************************************************************************
 	//Inicializamos BASS al arrancar el juego (id_del_device, muestras por segundo, ...)
 	if (BASS_Init(-1, 44100, 0, 0, NULL) == false) //-1 significa usar el por defecto del sistema operativo
 	{
@@ -58,7 +58,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 	//Lanzamos un sample
 	BASS_ChannelPlay(hSampleChannel, true);
-	//**********************************************************************************************
+	//***********************************************************************************************/
 
 
 	fps = 0;
