@@ -7,6 +7,7 @@ uniform vec3 u_camera_pos;
 
 uniform mat4 u_model;
 uniform mat4 u_viewprojection;
+uniform vec4 Kd;
 
 //this will store the color for the pixel shader
 varying vec3 v_position;
@@ -25,7 +26,7 @@ void main()
 	v_world_position = (u_model * vec4( v_position, 1.0) ).xyz;
 	
 	//store the color in the varying var to use it from the pixel shader
-	v_color = a_color;
+	v_color = Kd;
 
 	//store the texture coordinates
 	v_uv = a_uv;

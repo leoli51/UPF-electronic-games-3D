@@ -15,6 +15,8 @@
 #include "animation.h"
 #include "extra/coldet/coldet.h"
 
+#include "material.hpp"
+
 bool Mesh::use_binary = true;			//checks if there is .wbin, it there is one tries to read it instead of the other file
 bool Mesh::auto_upload_to_vram = true;	//uploads the mesh to the GPU VRAM to speed up rendering
 bool Mesh::interleave_meshes = true;	//places the geometry in an interleaved array
@@ -1087,6 +1089,9 @@ bool Mesh::loadOBJ(const char* filename)
 	sSubmeshInfo submesh_info;
 	int last_submesh_vertex = 0;
 	memset(&submesh_info, 0, sizeof(submesh_info));
+    
+    // material
+    Material* last_material = NULL;
 
 	//parse file
 	while(*pos != 0)
@@ -1108,7 +1113,7 @@ bool Mesh::loadOBJ(const char* filename)
 		std::vector<std::string> tokens = tokenize(line," ");
 
 		if (tokens.empty()) continue;
-
+        
 		if (tokens[0] == "v" && tokens.size() == 4)
 		{
 			Vector3 v((float)atof(tokens[1].c_str()), (float)atof(tokens[2].c_str()), (float)atof(tokens[3].c_str()) );
@@ -1133,8 +1138,20 @@ bool Mesh::loadOBJ(const char* filename)
 			//if (uvs.size() == 0 && indexed_uvs.size() )
 			//	uvs.resize(1);
 		}
+        else if (tokens[0] == "mtllib")
+        {
+            // load also associated material if there is one
+            std::cout<<std::endl<<"[MESH loadOBJ]: loading material for mesh: "<<filename<<std::endl;
+            std::string mtl_filename = filename;
+            mtl_filename = mtl_filename.substr(0,mtl_filename.find_last_of("/") + 1) + tokens[1];
+            std::cout<<mtl_filename<<std::endl;
+            Material::loadMTL(mtl_filename.c_str());
+            
+        }
 		else if (tokens[0] == "usemtl") //surface? it appears one time before the faces
 		{
+            std::cout<<"[MESH loadOBJ]: Submesh using material "<<tokens[1]<<std::endl;
+            last_material = Material::Get(tokens[1]);
 			if (last_submesh_vertex != vertices.size())
 			{
 				submesh_info.length = vertices.size() - submesh_info.start;
@@ -1144,8 +1161,7 @@ bool Mesh::loadOBJ(const char* filename)
 				strcpy(submesh_info.name, tokens[1].c_str());
 				submesh_info.start = last_submesh_vertex;
 			}
-			else
-				strcpy(submesh_info.material, tokens[1].c_str());
+			strcpy(submesh_info.material, tokens[1].c_str());
 		}
 		else if (tokens[0] == "g") //surface? it appears one time before the faces
 		{
@@ -1198,6 +1214,10 @@ bool Mesh::loadOBJ(const char* filename)
 
 	submesh_info.length = vertices.size() - last_submesh_vertex;
 	submeshes.push_back(submesh_info);
+    
+    for (int i = 0; i < submeshes.size(); i++)
+        std::cout<<"submesh: "<<submeshes.at(i).name<<" material: "<<submeshes.at(i).material<<std::endl;
+    
 	return true;
 }
 
