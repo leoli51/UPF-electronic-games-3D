@@ -207,11 +207,12 @@ int main(int argc, char **argv)
 
    MainMenuStage* mainMenu = new MainMenuStage();
    game->registerStage("mainMenu", mainMenu);
-   //game->setStage("mainMenu");
+
+   TutorialStage* tutorial = new TutorialStage();
+   game->registerStage("tutorial", tutorial);
 
    TestStage* test = new TestStage();
    game->registerStage("test", test);
-   //game->setStage("test");
 
 	//main loop, application gets inside here till user closes it
 	mainLoop();
